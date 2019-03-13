@@ -32,15 +32,6 @@ def permute_machine(*args):
         yield [[p[z][y] for z in range(len(p))] for y in range(len(p[0]))]
 
 
-# def permute_machine(*args):
-#     permutes = list(permutations(zip(*args)))
-#     final = []
-#     for i in permutes:
-#         tmp = tuple([i[z][y] for z in range(len(i))] for y in range(len(i[0])))
-#         final.append(tmp)
-#     return final
-
-
 def c_max(*args):
     """czas dla kazdej z permutacji danych maszyn"""
     for p in permute_machine(*args):
@@ -66,8 +57,6 @@ def johnsons_rule(arr1, arr2, arr3=None):
     if arr3:        # dla 3 maszyn
         s_1 = [arr1[i]+arr2[i] for i in range(len(arr1))]
         s_2 = [arr2[i]+arr3[i] for i in range(len(arr1))]
-        print(s_1)
-        print(s_2)
     else:           # dla 2 maszyn
         s_1 = arr1
         s_2 = arr2
@@ -134,12 +123,14 @@ if __name__ == '__main__':
     arrays = converter(o, *example)
     print(f"Czas: {total_makespan(*arrays)}")
 
-    arr1 = [randint(1, 10) for i in range(3)]
-    arr2 = [randint(1, 10) for i in range(3)]
-    arr3 = [randint(1, 10) for i in range(3)]
+    arr1 = [randint(1, 10) for i in range(5)]
+    arr2 = [randint(1, 10) for i in range(5)]
+    arr3 = [randint(1, 10) for i in range(5)]
 
     o_2 = johnsons_rule(arr1, arr2, arr3)
     print(total_makespan(*converter(o_2, arr1, arr2, arr3)))
     cmax = list(c_max(arr1, arr2, arr3))
     print(min(cmax))
     show_total_makespan(arr1, arr2, arr3)
+
+
