@@ -1,20 +1,18 @@
 import time
 from flowshop import total_makespan, file_reader
+import re
 
 
 def position(placed, element):
     order = placed[::]
     idx = 0
-    if not isinstance(element[0], list):
-        tmp = total_makespan(element, *order)
-    else:
-        tmp = total_makespan(*[element, *order])
+    tmp = total_makespan(element, *order)
     for i in range(1, len(order)+1):
         order.insert(i, element)
-        cmax = total_makespan(*order)
-        if cmax < tmp:
+        c_max = total_makespan(*order)
+        if c_max < tmp:
             idx = i
-            tmp = cmax
+            tmp = c_max
         del order[i]
     return idx
 
@@ -32,13 +30,40 @@ def neh(*args):
     return list(map(lambda x: x+1, order))
 
 
+def solve_reader():
+    """generator zwracjacy zawartosc danych z pliku data"""
+    with open("neh.data.txt", encoding='utf8') as file:
+        lines = iter(file.readlines())
+        start = re.compile(r'neh:')
+        end = re.compile(r'\n')
+        flag = False
+        for line in lines:
+            if re.match(start, line):
+                data = []
+                flag = True
+                next(lines)
+                continue
+            if re.fullmatch(end, line):
+                if flag:
+                    yield data
+                flag = False
+            if flag:
+                tmp = list(map(int, line.split()))
+                data.extend(tmp)
+        return StopIteration
+
+
 if __name__ == '__main__':
+    solves = list(solve_reader())
     examples = file_reader()
-    start = time.time()
     for w, e in enumerate(examples):
+        start_t = time.time()
         o = neh(*e)
+        end_t = time.time()
         print(f"{w}:")
         print(o)
-    end = time.time()
-    print(end - start)
+        print(solves[w])
+        if o == solves[w]:
+            print("Wynik prawidłowy")
+        print(end_t - start_t)
 
