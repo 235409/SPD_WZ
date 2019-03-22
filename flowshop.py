@@ -132,5 +132,3 @@ if __name__ == '__main__':
     cmax = list(c_max(arr1, arr2, arr3))
     print(min(cmax))
     show_total_makespan(arr1, arr2, arr3)
-
-
