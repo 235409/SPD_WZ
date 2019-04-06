@@ -2,6 +2,7 @@ import random as r
 from math import exp
 from flowshop import file_reader, converter
 import time
+from neh import Neh
 
 
 def total(*args):
@@ -19,10 +20,14 @@ def total(*args):
     return border[len(args) - 1][len(args[0]) - 1]
 
 
-def g_neighbor(solve):
+def g_neighbor(solve, insert=False):
     n_solve = solve[::]
-    index = r.sample(list(range(len(solve))), 2)
-    n_solve[index[0]], n_solve[index[1]] = n_solve[index[1]], n_solve[index[0]]
+    if insert:
+        element = n_solve.pop(r.randint(0, len(solve)-1))
+        n_solve.insert(r.randint(0, len(solve)-1), element)
+    else:
+        index = r.sample(list(range(len(solve))), 2)
+        n_solve[index[0]], n_solve[index[1]] = n_solve[index[1]], n_solve[index[0]]
     return n_solve
 
 
@@ -47,16 +52,33 @@ def chilling(t, param=None, k=None, k_max=None):
     return t*(k/k_max)
 
 
-def sa(*args):
-    tasks = list(zip(*args))
-    task = [[v, i] for i, v in enumerate(tasks)]
+def sa(*args, neh=False, diffrent=False):
+    if neh:
+        n = Neh()
+        pattern = n.neh(*args)
+        elements = converter(pattern, *args)
+        tasks = list(zip(*elements))
+        task = [[tasks[i], pattern[i]-1] for i in range(len(pattern))]
+    else:
+        tasks = list(zip(*args))
+        task = [[v, i] for i, v in enumerate(tasks)]
     solve = task[::]
-    r.shuffle(solve)
+    if not neh:
+        r.shuffle(solve)
     t = 200
     iteration = 10000
     for i in range(iteration):
-        solve_bis = g_neighbor(solve)
-        p = transition_p(total(*change(*solve)), total(*change(*solve_bis)), t)
+        cmax = total(*change(*solve))
+        if diffrent:
+            while True:
+                solve_bis = g_neighbor(solve)
+                cmax_bis = total(*change(*solve_bis))
+                if cmax != cmax_bis:
+                    break
+        else:
+            solve_bis = g_neighbor(solve)
+            cmax_bis = total(*change(*solve_bis))
+        p = transition_p(cmax, cmax_bis, t)
         if p >= r.uniform(0, 1):
             solve = solve_bis
         #t = chilling(t, k=i+1, k_max=iteration)
@@ -68,9 +90,9 @@ def sa(*args):
 if __name__ == '__main__':
     examples = file_reader()
     for w, e in enumerate(examples):
-        if w == 60:
+        if w == 30:
             start_t = time.time()
-            o = sa(*e)
+            o = sa(*e, neh=True, diffrent=True)
             end_t = time.time()
             czas = end_t - start_t
             print(f"{w}:")
