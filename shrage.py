@@ -23,9 +23,10 @@ def schrage(data):
             del ready[long[0]]
             order.append(long[0])
             t += long[1][1]
-        cooled.append(t + long[1][2])
+            cooled.append((order[-1], t + long[1][2]))
 
-    return order, max(cooled)
+    return order, max(cooled, key=lambda x: x[1])[1],\
+        sorted(cooled, key=lambda x: x[1])[-1][0]
 
 
 def schrage_ptm(data):
@@ -59,11 +60,11 @@ def schrage_ptm(data):
     return cmax
 
 
-def file_reader():
+def file_reader(name):
     """generator zwracjacy zawartosc danych z pliku data"""
-    with open("schr.data_n.txt", encoding='utf8') as file:
+    with open(name, encoding='utf8') as file:
         lines = file.readlines()
-        start = re.compile(r'data\.\d:')
+        start = re.compile(r'data\.\d+:')
         end = re.compile(r'\n')
         flag = False
         for line in lines:
@@ -81,12 +82,13 @@ def file_reader():
         return StopIteration
 
 
-examples = file_reader()
-for i, example in enumerate(examples):
-    if i == i:
-        strat = time.perf_counter()
-        result, cmax = schrage(example)
-        times = time.perf_counter()-strat
-        # cmax = schrage_ptm(example)
-        print(result)
-        print(cmax)
+if __name__ == '__main__':
+    examples = file_reader("schr.data.txt")
+    for i, example in enumerate(examples):
+        if i == i:
+            strat = time.perf_counter()
+            result, cmax, critical = schrage(example)
+            times = time.perf_counter()-strat
+            # cmax = schrage_ptm(example)
+            print(result)
+            print(cmax)

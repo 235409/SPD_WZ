@@ -1,5 +1,5 @@
 import time
-from flowshop import file_reader
+from flowshop import file_reader, converter
 import re
 
 
@@ -106,9 +106,11 @@ if __name__ == '__main__':
             start_t = time.time()
             o = neh.neh(*e)
             end_t = time.time()
+            czas = end_t - start_t
             print(f"{w}:")
             print(o)
             print(solves[w])
             if o == solves[w]:
                 print("Wynik prawidłowy")
-            print(end_t - start_t)
+            print(czas)
+            print(neh.total(*converter(o, *e)))

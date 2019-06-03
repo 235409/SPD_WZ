@@ -81,7 +81,7 @@ def sa(*args, neh=False, diffrent=False):
         p = transition_p(cmax, cmax_bis, t)
         if p >= r.uniform(0, 1):
             solve = solve_bis
-        #t = chilling(t, k=i+1, k_max=iteration)
+        # t = chilling(t, k=i+1, k_max=iteration)
         t = chilling(t, param=0.99)
     solve = [solve[i][1] for i in range(len(solve))]
     return list(map(lambda x: x+1, solve))
